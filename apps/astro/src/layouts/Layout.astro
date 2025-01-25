@@ -1,5 +1,8 @@
 ---
 import '../styles/globals.css';
+import { Header } from '../components/react/header';
+import { Footer } from '../components/react/footer';
+
 // Example prop for page titles (you can add more props as needed)
 export interface Props {
   title: string;
@@ -18,9 +21,21 @@ const { title } = Astro.props;
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <title>{title}</title>
 </head>
-<body>
-  <main class="mx-auto py-8">
+<body class="min-h-screen bg-slate-900">
+  <Header client:load />
+  <main>
     <slot /> {/* This is where the page content will be injected */}
   </main>
+  <Footer />
 </body>
 </html>
+
+<style>
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+  main {
+    flex: 1;
+  }
+</style>

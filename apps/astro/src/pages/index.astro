@@ -1,9 +1,15 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import {Hero} from '../components/react/hero.tsx'
+import {Hero} from '../components/react/hero'
+import {PrimaryFeatures} from '../components/react/primary-features'
+import {SecondaryFeatures} from '../components/react/secondary-features'
 import '@/styles/globals.css'
 ---
 
 <Layout title="Cloudflare Native Web Starter Kit">
-  <Hero client:load />
+  <main>
+    <Hero client:load />
+    <PrimaryFeatures client:load />
+    <SecondaryFeatures client:load />
+  </main>
 </Layout>
