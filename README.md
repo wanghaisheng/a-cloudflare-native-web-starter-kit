@@ -88,7 +88,28 @@ binding = "BUCKET"
 bucket_name = "your-bucket-name"
 ```
 
-5. **Initial Deployment**
+5. **Set up Cloudflare API Token**
+
+Create a Cloudflare API token with D1 read and write permissions:
+
+1. Go to the [Cloudflare Dashboard](https://dash.cloudflare.com/profile/api-tokens)
+2. Click "Create Token"
+3. Use the "Create Custom Token" option
+4. Grant the following permissions:
+   - Account > D1 > Edit
+5. Copy the generated token
+
+Create a `.env` file in the root of the project with the following variables:
+```bash
+CLOUDFLARE_ACCOUNT_ID="your-account-id"
+CLOUDFLARE_DATABASE_ID="your-d1-database-id"
+CLOUDFLARE_D1_TOKEN="your-api-token"
+```
+
+You can find your Account ID in the Cloudflare Dashboard URL or overview page.
+The Database ID was provided when you created your D1 database.
+
+6. **Initial Deployment**
 
 Before running the app locally, you need to deploy the API service and workflows:
 
@@ -102,77 +123,15 @@ cd ../workflows
 pnpm run deploy
 ```
 
-6. **Environment Setup**
+7. **Environment Setup**
 
 Create `.env` files based on the provided examples and update with your credentials:
 ```bash
 cp apps/expo/.env.example apps/expo/.env
 ```
 
-7. **Start Development**
+8. **Start Development**
 
 ```bash
 pnpm dev
 ```
-
-## 🔧 Troubleshooting
-
-If you run into package-related issues when updating dependencies or adding new packages:
-
-```bash
-# Clean workspace and rebuild
-pnpm clean:workspaces
-pnpm install
-pnpm build
-```
-
-## 📝 Development Notes
-
-- Use `pnpm dev` to start all services in development mode
-- Database migrations can be run with `pnpm db:generate`
-- The project uses a monorepo structure with Turborepo for efficient builds
-
-## 🚀 Deploying Changes
-
-When you make changes to the API service or workflows, you'll need to redeploy:
-
-```bash
-# Deploy API service changes
-cd apps/apiservice
-pnpm run deploy
-
-# Deploy workflow changes
-cd ../workflows
-pnpm run deploy
-```
-
-## 📚 Tech Stack
-
-- **Frontend**: React Native (Expo), Astro
-- **Backend**: Cloudflare Workers, Workers AI
-- **Database**: Cloudflare D1 (SQLite)
-- **Storage**: Cloudflare R2
-- **Authentication**: Clerk
-- **API**: tRPC
-- **Build Tool**: Turborepo
-- **Package Manager**: pnpm
-
-## 🎯 Example App
-
-The included example app demonstrates:
-- User authentication with Clerk
-- Generating stories about a user's day using Workers AI
-- Creating AI-generated images based on the stories
-- Storing images in R2
-- Managing user data in D1
-- Processing AI tasks with durable Workers
-
-You can use this as a reference to build your own AI-powered applications with different features and use cases.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please read our contributing guidelines before submitting PRs.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
