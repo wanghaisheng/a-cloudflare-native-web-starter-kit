@@ -1,0 +1,9 @@
+---
+import Layout from '../layouts/Layout.astro';
+import {Hero} from '../components/react/hero.tsx'
+import '@/styles/globals.css'
+---
+
+<Layout title="Cloudflare Native Web Starter Kit">
+  <Hero client:load />
+</Layout>
