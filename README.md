@@ -1,4 +1,4 @@
-# Cloudflare Turbo Stack
+# Cloudflare Native and Web Starter Kit
 
 A starter template that demonstrates how to build AI-powered mobile and web applications using Cloudflare workers and wrangler CLI. This example app creates AI-generated stories about a user's day and generates accompanying images - all powered by Cloudflare workers. You can use this as a foundation to build any type of AI-powered application you want.
 
