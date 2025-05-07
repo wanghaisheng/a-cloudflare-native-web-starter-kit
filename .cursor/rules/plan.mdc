@@ -1,3 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
 # 游戏UI组件库开发计划
 
 ## 项目概述
@@ -53,7 +58,7 @@
 
 1. **组件开发技术**
    - 使用 React Native / Expo 构建基础组件
-   - 基于  NativeBase 等 UI 库扩展
+   - 基于 Tamagui 或 NativeBase 等 UI 库扩展
    - 使用 Reanimated 2 实现动画效果
    - 使用 React Context API 实现主题切换
 
@@ -142,3 +147,4 @@
 4. 阶段四: 2天
 
 总计: 10天完成基础版本
+

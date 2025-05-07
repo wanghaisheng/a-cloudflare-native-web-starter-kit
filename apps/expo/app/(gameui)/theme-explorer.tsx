@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView, SafeAreaView, StatusBar, Platform } from 'react-native';
-import { ThemeProvider } from '../components/themes/ThemeProvider';
-import { Button, Text, Card, Input, LoadingIndicator } from '../components/core';
-import { ThemeStyleType, STYLE_THEMES } from '../utils/theme';
+import { ThemeProvider } from '../../components/themes/ThemeProvider';
+import { Button, Text, Card, Input, LoadingIndicator } from '../../components/core';
+import { ThemeStyleType, STYLE_THEMES } from '../../utils/theme';
 import { router } from 'expo-router';
 
 export default function ThemeShowcase() {

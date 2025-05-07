@@ -1,0 +1,475 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Game UI Component Library - Micro-Component Implementation Strategy
+
+## Introduction to Micro-Component Architecture
+
+To overcome the file size limitations we've encountered, we'll now focus on a micro-component architecture approach. This strategy involves breaking down larger UI elements into small, focused components that can be easily maintained and composed together.
+
+## Benefits of Micro-Component Architecture
+
+1. **Smaller File Sizes**: Each component file remains small and manageable
+2. **Incremental Development**: Add features gradually without rewriting entire components
+3. **Better Reusability**: Small components are more likely to be reused across the application
+4. **Easier Testing**: Test individual pieces of functionality in isolation
+5. **Simpler Maintenance**: Changes to one aspect don't require modifying large files
+
+## Implementation Strategy for Priority 1 Components
+
+### 1. SettingsMenu Implementation
+
+Rather than creating a single large SettingsMenu component, we'll break it down into smaller, specialized components:
+
+#### Base Components
+1. `SettingLabel.tsx` - Consistent labeling for settings (with optional description)
+2. `SettingContainer.tsx` - Standardized container with consistent styling
+3. `SettingDivider.tsx` - Visual separator between settings groups
+
+#### Control Components
+1. `ToggleSetting.tsx` - On/off switch with label
+2. `SliderSetting.tsx` - Range selector with value display
+3. `DropdownSetting.tsx` - Selection from list of options
+4. `RadioSetting.tsx` - Mutually exclusive options
+
+#### Group Components
+1. `SettingsSection.tsx` - Group of related settings with a title
+2. `SettingsTab.tsx` - Tab content for a category of settings
+3. `TabNavigation.tsx` - Tab switcher for settings categories
+
+#### Example Implementation Plan
+1. Create the base components first
+2. Build the control components using the base components
+3. Implement the group components using the control components
+4. Create specific sections (audio, graphics, etc.) using these building blocks
+
+### 2. CharacterStats Implementation
+
+Similarly, we'll break down the character stats system into smaller components:
+
+#### Base Components
+1. `ProgressBar.tsx` - Basic progress visualization
+2. `StatLabel.tsx` - Styled stat name and value display
+3. `ModifierTag.tsx` - Small visual element for stat modifiers
+
+#### Stat Components
+1. `SingleStat.tsx` - Individual stat with name and value
+2. `StatWithModifiers.tsx` - Stat showing base value and modifiers
+3. `StatProgress.tsx` - Stat with progress bar visualization
+
+#### Group Components
+1. `StatGroup.tsx` - Group of related stats with a title
+2. `StatGrid.tsx` - Grid layout for multiple stats
+3. `AttributeSection.tsx` - Complete section of character attributes
+
+#### Example Implementation Plan
+1. Create the base components first
+2. Build the stat components using the base components
+3. Implement the group components using the stat components
+4. Create specialized views (attributes, combat stats, etc.)
+
+### 3. InventorySystem Implementation
+
+The inventory system can be broken down as follows:
+
+#### Base Components
+1. `ItemSlot.tsx` - Single inventory slot (empty or filled)
+2. `ItemIcon.tsx` - Visualizing an item with rarity, level, etc.
+3. `ItemTooltip.tsx` - Detailed item information on hover/tap
+
+#### Item Components
+1. `InventoryItem.tsx` - Complete item representation in inventory
+2. `EquipmentSlot.tsx` - Specialized slot for equipped items
+3. `ItemQuantity.tsx` - Display for stackable items
+
+#### Layout Components
+1. `ItemGrid.tsx` - Grid layout for inventory slots
+2. `ItemList.tsx` - List layout for inventory items
+3. `FilterBar.tsx` - Controls for filtering and sorting items
+
+#### Example Implementation Plan
+1. Create the base components first
+2. Build the item components using the base components
+3. Implement the layout components using the item components
+4. Create specialized views (backpack, equipment, bank, etc.)
+
+## Implementation Example: Settings Controls
+
+Let's look at a concrete example of how this micro-component approach would work for settings controls:
+
+### Step 1: Create SettingLabel
+```tsx
+// SettingLabel.tsx
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Text } from '../core';
+
+interface SettingLabelProps {
+  label: string;
+  description?: string;
+}
+
+const SettingLabel: React.FC<SettingLabelProps> = ({ label, description }) => {
+  return (
+    <View style={styles.container}>
+      <Text variant="body2" style={styles.label}>{label}</Text>
+      {description && (
+        <Text variant="caption" style={styles.description}>{description}</Text>
+      )}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  label: {
+    fontWeight: 'bold',
+  },
+  description: {
+    opacity: 0.7,
+    marginTop: 2,
+  },
+});
+
+export default SettingLabel;
+```
+
+### Step 2: Create SettingContainer
+```tsx
+// SettingContainer.tsx
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+
+interface SettingContainerProps {
+  children: React.ReactNode;
+  disabled?: boolean;
+}
+
+const SettingContainer: React.FC<SettingContainerProps> = ({ 
+  children, 
+  disabled = false 
+}) => {
+  return (
+    <View style={[
+      styles.container,
+      disabled && styles.disabled
+    ]}>
+      {children}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+});
+
+export default SettingContainer;
+```
+
+### Step 3: Create ToggleSetting Using Micro-Components
+```tsx
+// ToggleSetting.tsx
+import React from 'react';
+import { Switch } from 'react-native';
+import { useTheme } from '../../utils/theme';
+import SettingContainer from './SettingContainer';
+import SettingLabel from './SettingLabel';
+
+interface ToggleSettingProps {
+  label: string;
+  description?: string;
+  value: boolean;
+  onChange: (value: boolean) => void;
+  disabled?: boolean;
+}
+
+const ToggleSetting: React.FC<ToggleSettingProps> = ({
+  label,
+  description,
+  value,
+  onChange,
+  disabled = false,
+}) => {
+  const { theme } = useTheme();
+  
+  return (
+    <SettingContainer disabled={disabled}>
+      <SettingLabel label={label} description={description} />
+      
+      <Switch
+        value={value}
+        onValueChange={onChange}
+        disabled={disabled}
+        trackColor={{ 
+          false: '#D1D1D1', 
+          true: `${theme.colors.primary}80` 
+        }}
+        thumbColor={value ? theme.colors.primary : '#F4F4F4'}
+      />
+    </SettingContainer>
+  );
+};
+
+export default ToggleSetting;
+```
+
+## Next Steps: Creating Audio Settings Section
+
+Now that we have our base components, we can create a specific settings section:
+
+```tsx
+// AudioSettings.tsx
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Text } from '../core';
+import ToggleSetting from './ToggleSetting';
+import SliderSetting from './SliderSetting';
+import SettingDivider from './SettingDivider';
+
+interface AudioSettingsProps {
+  settings: {
+    soundEnabled: boolean;
+    musicEnabled: boolean;
+    soundVolume: number;
+    musicVolume: number;
+    voiceVolume: number;
+  };
+  onChange: (key: string, value: any) => void;
+}
+
+const AudioSettings: React.FC<AudioSettingsProps> = ({ settings, onChange }) => {
+  return (
+    <View style={styles.container}>
+      <Text variant="h3" style={styles.sectionTitle}>Audio Settings</Text>
+      
+      <ToggleSetting
+        label="Sound Effects"
+        description="Enable in-game sound effects"
+        value={settings.soundEnabled}
+        onChange={(value) => onChange('soundEnabled', value)}
+      />
+      
+      <ToggleSetting
+        label="Music"
+        description="Enable background music"
+        value={settings.musicEnabled}
+        onChange={(value) => onChange('musicEnabled', value)}
+      />
+      
+      <SettingDivider />
+      
+      <SliderSetting
+        label="Sound Volume"
+        value={settings.soundVolume}
+        min={0}
+        max={100}
+        formatValue={(value) => `${value}%`}
+        onChange={(value) => onChange('soundVolume', value)}
+        disabled={!settings.soundEnabled}
+      />
+      
+      <SliderSetting
+        label="Music Volume"
+        value={settings.musicVolume}
+        min={0}
+        max={100}
+        formatValue={(value) => `${value}%`}
+        onChange={(value) => onChange('musicVolume', value)}
+        disabled={!settings.musicEnabled}
+      />
+      
+      <SliderSetting
+        label="Voice Volume"
+        value={settings.voiceVolume}
+        min={0}
+        max={100}
+        formatValue={(value) => `${value}%`}
+        onChange={(value) => onChange('voiceVolume', value)}
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 8,
+  },
+  sectionTitle: {
+    marginBottom: 16,
+    paddingHorizontal: 12,
+  },
+});
+
+export default AudioSettings;
+```
+
+## Building the Complete Settings Page
+
+Finally, we can compose all these components into a complete settings page:
+
+```tsx
+// SettingsPage.tsx
+import React, { useState } from 'react';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { Card, Button } from '../core';
+import TabNavigation from './TabNavigation';
+import AudioSettings from './AudioSettings';
+import GraphicsSettings from './GraphicsSettings';
+import GameplaySettings from './GameplaySettings';
+import AccessibilitySettings from './AccessibilitySettings';
+
+const defaultSettings = {
+  audio: {
+    soundEnabled: true,
+    musicEnabled: true,
+    soundVolume: 80,
+    musicVolume: 70,
+    voiceVolume: 90,
+  },
+  graphics: {
+    quality: 'medium',
+    fps: 60,
+    shadows: true,
+    particles: true,
+    // ...other graphics settings
+  },
+  // ...other setting categories
+};
+
+const SettingsPage: React.FC = () => {
+  const [settings, setSettings] = useState(defaultSettings);
+  const [activeTab, setActiveTab] = useState('audio');
+  
+  const handleSettingChange = (category, key, value) => {
+    setSettings(prev => ({
+      ...prev,
+      [category]: {
+        ...prev[category],
+        [key]: value
+      }
+    }));
+  };
+  
+  const resetSettings = () => {
+    setSettings(defaultSettings);
+  };
+  
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'audio':
+        return (
+          <AudioSettings
+            settings={settings.audio}
+            onChange={(key, value) => handleSettingChange('audio', key, value)}
+          />
+        );
+      case 'graphics':
+        return (
+          <GraphicsSettings
+            settings={settings.graphics}
+            onChange={(key, value) => handleSettingChange('graphics', key, value)}
+          />
+        );
+      // Add other tabs as needed
+    }
+  };
+  
+  return (
+    <Card title="Game Settings" style={styles.container}>
+      <TabNavigation
+        tabs={[
+          { id: 'audio', label: 'Audio' },
+          { id: 'graphics', label: 'Graphics' },
+          { id: 'gameplay', label: 'Gameplay' },
+          { id: 'accessibility', label: 'Accessibility' },
+        ]}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
+      
+      <ScrollView style={styles.content}>
+        {renderTabContent()}
+      </ScrollView>
+      
+      <View style={styles.footer}>
+        <Button
+          title="Reset to Default"
+          variant="outline"
+          onPress={resetSettings}
+          style={styles.resetButton}
+        />
+        
+        <Button
+          title="Save Settings"
+          variant="primary"
+          onPress={() => console.log('Settings saved:', settings)}
+          style={styles.saveButton}
+        />
+      </View>
+    </Card>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0,0,0,0.1)',
+  },
+  resetButton: {
+    marginRight: 12,
+  },
+  saveButton: {
+    minWidth: 100,
+  },
+});
+
+export default SettingsPage;
+```
+
+## Conclusion: Benefits of the Micro-Component Approach
+
+This approach provides several key benefits:
+
+1. **Size Management**: Each file remains small and focused, avoiding write timeout issues
+2. **Progressive Enhancement**: We can improve components incrementally
+3. **Composability**: Complex UIs are built from simple building blocks
+4. **Maintainability**: Easier to fix and update individual components
+5. **Team Collaboration**: Different team members can work on different components
+6. **Testing**: Simpler to create unit tests for smaller components
+7. **Documentation**: Easier to document smaller, focused components
+
+By following this micro-component architecture, we can continue developing our Game UI Component Library despite the file size limitations, creating a comprehensive, flexible system for game user interfaces.
+
+## Next Implementation Focus
+
+For the next phase of development, we should focus on:
+
+1. Implementing the ProgressBar component as a fundamental building block
+2. Creating the basic stat visualization components for character attributes
+3. Developing the inventory slot and item display components
+4. Building simple animation utilities that can be composed into more complex effects
+
+
+This approach will allow us to make steady progress while working around the technical limitations we've encountered.
